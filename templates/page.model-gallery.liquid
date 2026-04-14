@@ -1,0 +1,159 @@
+{% comment %}
+  OpsAgents ECommerce Photo Studio — Model Gallery Page Template
+  Usage: Create a page in Shopify Admin with template = page.model-gallery
+  This page replaces the standard page template with the AI model gallery.
+{% endcomment %}
+
+{{ 'studio-gallery.css' | asset_url | stylesheet_tag }}
+
+<div class="studio-page" id="model-gallery-page">
+
+  {%- comment -%} HERO STRIP {%- endcomment -%}
+  <div class="studio-hero-strip">
+    <div class="studio-container">
+      <div class="studio-kicker">Choose Your AI Model</div>
+      <h1 class="studio-hero-title">20 Diverse AI Models.<br>One for Every Brand.</h1>
+      <p class="studio-hero-sub">
+        Select the model that best represents your customer. Every model is AI-generated,
+        inclusive, and ready to wear your collection.
+      </p>
+      <div class="studio-hero-meta">
+        <span class="studio-meta-chip">📸 $6 per photo</span>
+        <span class="studio-meta-chip">🎬 $30 per video</span>
+        <span class="studio-meta-chip">⏱ 3 business days</span>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} FILTER BAR {%- endcomment -%}
+  <div class="studio-filter-bar">
+    <div class="studio-container">
+      <div class="studio-filters" id="model-filters">
+        <button class="studio-filter active" data-filter="all">All Models</button>
+        <button class="studio-filter" data-filter="editorial">Editorial</button>
+        <button class="studio-filter" data-filter="casual">Casual</button>
+        <button class="studio-filter" data-filter="streetwear">Streetwear</button>
+        <button class="studio-filter" data-filter="luxury">Luxury</button>
+        <button class="studio-filter" data-filter="minimal">Minimal</button>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} MODEL GRID {%- endcomment -%}
+  <div class="studio-container">
+    <div class="studio-model-grid" id="model-grid">
+
+      {%- comment -%}
+        MODEL CARDS
+        To add real photos later: replace the .model-avatar-placeholder div
+        with an <img> tag: <img src="{{ 'model-sofia.jpg' | asset_url }}" alt="Sofia">
+        Each card has: data-style for filtering, data-name for order reference
+      {%- endcomment -%}
+
+      {%- assign models = "
+        Sofia|Mediterranean|editorial,luxury|top|p1|👩🏿d,
+        Aisha|West African|streetwear,bold|hot|p2|👩🏿,
+        Mei|East Asian|minimal,clean|new|p3|👩🏻,
+        Priya|South Asian|vibrant,fashion||p4|👩🏿d,
+        Luna|Latina|casual,chic|hot|p5|👩🏿d,
+        Zara|Middle Eastern|luxury,modest|top|p1|👩🏻,
+        Maya|Black American|streetwear,urban||p2|👩🏿,
+        Isla|Northern European|minimal,classic|new|p3|👩🏾,
+        Nadia|Eastern European|editorial,edgy||p4|👩🏻,
+        Fatima|North African|modest,elegant|new|p5|👩🏿d,
+        Yuna|Korean|k-fashion,trendy|hot|p1|👩🏻,
+        Carmen|Spanish|casual,mediterranean||p2|👩🏿d,
+        Asha|Ethiopian|editorial,luxury|top|p3|👩🏿,
+        Lily|Australian|casual,beach||p4|👩🏾,
+        Nia|Caribbean|vibrant,bold|new|p5|👩🏽,
+        Hana|Japanese|minimal,zen||p1|👩🏻,
+        Valentina|Brazilian|bold,confident|hot|p2|👩🏿d,
+        Sara|Scandinavian|minimal,clean||p3|👩🏾,
+        Amara|Nigerian|editorial,artistic|top|p4|👩🏿,
+        Elena|Russian|editorial,sleek||p5|👩🏻
+      " | split: "," -%}
+
+      {%- for model_raw in models -%}
+        {%- assign model_raw = model_raw | strip -%}
+        {%- unless model_raw == blank -%}
+          {%- assign parts = model_raw | split: "|" -%}
+          {%- assign m_name = parts[0] | strip -%}
+          {%- assign m_ethnicity = parts[1] | strip -%}
+          {%- assign m_tags = parts[2] | strip | split: "," -%}
+          {%- assign m_badge = parts[3] | strip -%}
+          {%- assign m_palette = parts[4] | strip -%}
+          {%- assign m_emoji = parts[5] | strip -%}
+          {%- assign m_primary_tag = m_tags[0] | strip -%}
+
+          <div class="studio-model-card" data-style="{{ m_primary_tag }}" data-name="{{ m_name }}">
+            <div class="model-avatar {{ m_palette }}">
+              <div class="model-avatar-inner">
+                {%- comment -%} Replace this div with actual <img> when you have real photos {%- endcomment -%}
+                <div class="model-emoji-placeholder">{{ m_emoji }}</div>
+                <div class="model-name-overlay">{{ m_name }}</div>
+              </div>
+              {%- unless m_badge == blank -%}
+                <span class="model-badge badge-{{ m_badge }}">
+                  {%- if m_badge == 'top' -%}⭐ Top Pick
+                  {%- elsif m_badge == 'hot' -%}🔥 Hot
+                  {%- elsif m_badge == 'new' -%}❆ New
+                  {%- endif -%}
+                </span>
+              {%- endunless -%}
+            </div>
+            <div class="model-info">
+              <div class="model-name-text">{{ m_name }}</div>
+              <div class="model-ethnicity">{{ m_ethnicity }}</div>
+              <div class="model-tags">
+                {%- for tag in m_tags -%}
+                  <span class="model-tag">{{ tag | strip }}</span>
+                {%- endfor -%}
+              </div>
+              <a href="/products/ai-model-photo?model={{ m_name | downcase | replace: ' ', '-' }}"
+                 class="model-order-btn">
+                Order with {{ m_name }} →
+              </a>
+            </div>
+          </div>
+
+        {%- endunless -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+
+  {%- comment -%} BOTTOM CTA {%- endcomment -%}
+  <div class="studio-bottom-cta">
+    <div class="studio-container">
+      <div class="studio-kicker">Ready to order?</div>
+      <h2 class="studio-cta-title">Pick a model. Upload your product. Done.</h2>
+      <p>Professional AI model photos delivered in 3 business days — starting at $6.</p>
+      <div class="studio-cta-actions">
+        <a href="/products/ai-model-photo" class="studio-btn-primary">Order Photo — $6 →</a>
+        <a href="/products/ai-model-video" class="studio-btn-secondary">Order Video — $30</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Filter functionality
+document.querySelectorAll('.studio-filter').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.studio-filter').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    document.querySelectorAll('.studio-model-card').forEach(card => {
+      if (filter === 'all' || card.dataset.style === filter) {
+        card.style.display = '';
+        card.style.animation = 'studioFadeIn 0.4s ease both';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+
+{{ 'studio-gallery.js' | asset_url | script_tag }}

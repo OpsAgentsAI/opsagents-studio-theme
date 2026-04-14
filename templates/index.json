@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "studio_landing": {
+      "type": "studio-landing",
+      "settings": {}
+    }
+  },
+  "order": [
+    "studio_landing"
+  ]
+}

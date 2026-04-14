@@ -1,0 +1,743 @@
+<style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:      #08080f;
+      --bg-card:      #111120;
+      --bg-raised:    #18182b;
+      --bg-overlay:   #21213a;
+      --brand:        #7c3aed;
+      --brand-light:  #9f67ff;
+      --brand-dim:    rgba(124,58,237,0.12);
+      --accent:       #10b981;
+      --accent-dim:   rgba(16,185,129,0.12);
+      --gold:         #f59e0b;
+      --gold-dim:     rgba(245,158,11,0.10);
+      --text-primary: #f0f0f4;
+      --text-muted:   #6b6b88;
+      --text-sub:     #9898b8;
+      --border:       #1e1e35;
+      --border-light: #2a2a45;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ââ ANIMATIONS ââ */
+    @keyframes fadeIn   { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:none } }
+    @keyframes glow     { 0%,100% { box-shadow:0 0 20px rgba(124,58,237,0.25) } 50% { box-shadow:0 0 40px rgba(124,58,237,0.55) } }
+    @keyframes float    { 0%,100% { transform:translateY(0) } 50% { transform:translateY(-8px) } }
+    @keyframes shimmer  { from { background-position:-200% center } to { background-position:200% center } }
+    @keyframes spin     { to { transform:rotate(360deg) } }
+
+    .animate-fade  { animation: fadeIn 0.6s ease both }
+    .animate-up    { animation: fadeUp 0.7s ease both }
+    .d-1 { animation-delay:.1s } .d-2 { animation-delay:.2s } .d-3 { animation-delay:.3s }
+    .d-4 { animation-delay:.4s } .d-5 { animation-delay:.5s } .d-6 { animation-delay:.6s }
+
+    /* ââ NAV ââ */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 0 40px; height: 64px;
+      background: rgba(8,8,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display:flex; align-items:center; gap:10px;
+      font-size:15px; font-weight:700; letter-spacing:-.01em;
+      color: var(--text-primary); text-decoration:none;
+    }
+    .nav-logo-icon {
+      width:32px; height:32px; border-radius:8px;
+      background: linear-gradient(135deg, var(--brand), #5b21b6);
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px;
+    }
+    .nav-links { display:flex; align-items:center; gap:28px; }
+    .nav-links a {
+      font-size:13px; font-weight:500; color:var(--text-sub);
+      text-decoration:none; transition:.2s color;
+    }
+    .nav-links a:hover { color:var(--text-primary); }
+    .nav-cta {
+      padding:8px 18px; border-radius:8px; font-size:13px; font-weight:600;
+      background: var(--brand); color:#fff; text-decoration:none;
+      transition:.2s opacity; cursor:pointer;
+    }
+    .nav-cta:hover { opacity:.85; }
+
+    /* ââ HERO ââ */
+    .hero {
+      min-height: 100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding: 120px 40px 80px;
+      text-align:center;
+      position:relative; overflow:hidden;
+    }
+    .hero-glow {
+      position:absolute; top:20%; left:50%; transform:translateX(-50%);
+      width:700px; height:500px; border-radius:50%;
+      background: radial-gradient(ellipse, rgba(124,58,237,0.18) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .hero-kicker {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 14px; border-radius:999px;
+      background: var(--brand-dim); border:1px solid rgba(124,58,237,0.25);
+      font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      color: var(--brand-light); margin-bottom:28px;
+    }
+    .hero-kicker-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); animation: spin 3s linear infinite; }
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight:900; line-height:1.08;
+      letter-spacing:-.03em;
+      max-width:800px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--brand-light) 0%, #c084fc 50%, var(--accent) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-sub {
+      margin-top:20px; max-width:560px;
+      font-size:17px; font-weight:400; color:var(--text-sub); line-height:1.65;
+    }
+    .hero-actions {
+      display:flex; gap:14px; margin-top:36px; flex-wrap:wrap; justify-content:center;
+    }
+    .btn-primary {
+      padding:14px 32px; border-radius:10px; font-size:15px; font-weight:700;
+      background: var(--brand); color:#fff; text-decoration:none; border:none;
+      cursor:pointer; transition:.2s all; animation: glow 3s ease-in-out infinite;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn-primary:hover { transform:translateY(-1px); opacity:.9; }
+    .btn-secondary {
+      padding:14px 28px; border-radius:10px; font-size:15px; font-weight:600;
+      background:transparent; color:var(--text-primary); text-decoration:none;
+      border:1px solid var(--border-light); cursor:pointer; transition:.2s all;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn-secondary:hover { border-color:var(--brand-light); color:var(--brand-light); }
+
+    /* ââ BEFORE/AFTER SHOWCASE ââ */
+    .showcase {
+      display:flex; gap:20px; margin-top:64px;
+      justify-content:center; align-items:flex-end; flex-wrap:wrap;
+    }
+    .showcase-card {
+      border-radius:16px; overflow:hidden;
+      border:1px solid var(--border-light);
+      position:relative;
+    }
+    .showcase-label {
+      position:absolute; top:12px; left:12px; z-index:2;
+      padding:4px 10px; border-radius:6px; font-size:10px; font-weight:700;
+      letter-spacing:.1em; text-transform:uppercase;
+    }
+    .label-before { background:rgba(0,0,0,0.7); color:var(--text-sub); border:1px solid var(--border); }
+    .label-after  { background:rgba(124,58,237,0.25); color:var(--brand-light); border:1px solid rgba(124,58,237,0.4); }
+    .showcase-img-before {
+      width:200px; height:280px;
+      background: linear-gradient(160deg, #1a1a2e 0%, #252540 100%);
+      display:flex; align-items:center; justify-content:center;
+      font-size:48px; opacity:.5;
+    }
+    .showcase-img-after {
+      width:260px; height:360px;
+      background: linear-gradient(160deg, #2d1b69 0%, #1e0a4f 40%, #0f0a2e 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+      padding-bottom:24px; position:relative;
+    }
+    .showcase-model-silhouette {
+      position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+      width:160px; height:320px;
+      background: linear-gradient(to top, rgba(124,58,237,0.15), transparent);
+      border-radius:80px 80px 0 0;
+    }
+    .showcase-arrow {
+      display:flex; align-items:center; justify-content:center;
+      width:48px; height:48px; border-radius:50%;
+      background: var(--brand-dim); border:1px solid rgba(124,58,237,0.3);
+      color:var(--brand-light); font-size:20px; align-self:center;
+    }
+    .showcase-days {
+      position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+      padding:4px 10px; border-radius:6px; font-size:10px; font-weight:700;
+      letter-spacing:.1em; text-transform:uppercase; white-space:nowrap;
+      background:rgba(16,185,129,0.15); color:var(--accent); border:1px solid rgba(16,185,129,0.3);
+    }
+
+    /* ââ STATS BAR ââ */
+    .stats-bar {
+      display:flex; justify-content:center; gap:0; flex-wrap:wrap;
+      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+      background:var(--bg-card);
+    }
+    .stat-item {
+      padding:28px 48px; text-align:center; flex:1; min-width:160px;
+      border-right:1px solid var(--border);
+    }
+    .stat-item:last-child { border-right:none; }
+    .stat-num {
+      font-size:32px; font-weight:800; letter-spacing:-.02em;
+      background: linear-gradient(135deg, var(--brand-light), var(--accent));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .stat-label { font-size:12px; font-weight:500; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:.08em; }
+
+    /* ââ SECTION WRAPPER ââ */
+    .section { padding:96px 40px; max-width:1200px; margin:0 auto; }
+    .section-kicker {
+      font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:var(--brand-light); margin-bottom:12px;
+    }
+    .section-title {
+      font-size:clamp(28px,3.5vw,44px); font-weight:800; letter-spacing:-.025em; line-height:1.15;
+    }
+    .section-sub {
+      font-size:16px; color:var(--text-sub); margin-top:12px; max-width:540px; line-height:1.65;
+    }
+    .section-header { margin-bottom:52px; }
+
+    /* ââ HOW IT WORKS ââ */
+    .steps-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+    }
+    .step-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:28px;
+      transition:.25s all; position:relative; overflow:hidden;
+    }
+    .step-card::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg, var(--brand-dim) 0%, transparent 60%);
+      opacity:0; transition:.25s opacity;
+    }
+    .step-card:hover { border-color:rgba(124,58,237,0.4); transform:translateY(-3px); }
+    .step-card:hover::before { opacity:1; }
+    .step-num {
+      width:40px; height:40px; border-radius:10px;
+      background:var(--brand-dim); border:1px solid rgba(124,58,237,0.25);
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; font-weight:800; color:var(--brand-light);
+      margin-bottom:20px;
+    }
+    .step-icon { font-size:28px; margin-bottom:16px; }
+    .step-title { font-size:18px; font-weight:700; margin-bottom:10px; }
+    .step-desc { font-size:14px; color:var(--text-sub); line-height:1.65; }
+    .step-tag {
+      display:inline-flex; margin-top:16px; padding:4px 10px; border-radius:6px;
+      font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      background:var(--accent-dim); color:var(--accent); border:1px solid rgba(16,185,129,0.2);
+    }
+
+    /* ââ MODEL GALLERY ââ */
+    .models-section { background:var(--bg-card); padding:96px 40px; }
+    .models-grid {
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+      gap:16px; max-width:1200px; margin:0 auto;
+    }
+    .model-card {
+      border-radius:14px; overflow:hidden; border:1px solid var(--border);
+      background:var(--bg-raised); cursor:pointer;
+      transition:.25s all; position:relative; group;
+    }
+    .model-card:hover { border-color:var(--brand-light); transform:translateY(-4px); box-shadow:0 12px 40px rgba(124,58,237,0.2); }
+    .model-avatar {
+      width:100%; aspect-ratio:3/4; display:flex; align-items:flex-end;
+      position:relative; overflow:hidden;
+    }
+    .model-avatar-inner {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    }
+    .model-silhouette { font-size:72px; opacity:.25; }
+    .model-overlay {
+      position:absolute; bottom:0; left:0; right:0; h%ight:60%;
+      background:linear-gradient(to top, var(--bg-raised) 0%, transparent 100%);
+    }
+    .model-badge {
+      position:absolute; top:10px; right:10px;
+      padding:3px 8px; border-radius:6px; font-size:9px; font-weight:700;
+      letter-spacing:.1em; text-transform:uppercase;
+    }
+    .model-info { padding:14px; }
+    .model-name { font-size:14px; font-weight:700; margin-bottom:4px; }
+    .model-ethnicity { font-size:11px; color:var(--text-muted); margin-bottom:10px; }
+    .model-tags { display:flex; flex-wrap:wrap; gap:4px; }
+    .model-tag {
+      padding:2px 7px; border-radius:4px; font-size:9px; font-weight:600;
+      letter-spacing:.06em; text-transform:uppercase;
+      background:var(--bg-overlay); color:var(--text-sub); border:1px solid var(--border);
+    }
+    .model-select-btn {
+      width:100%; margin-top:12px; padding:8px; border-radius:8px; font-size:12px;
+      font-weight:600; border:1px solid var(--border-light); background:transparent;
+      color:var(--text-sub); cursor:pointer; transition:.2s all;
+    }
+    .model-card:hover .model-select-btn {
+      background:var(--brand); color:#fff; border-color:var(--brand);
+    }
+
+    /* ââ PRICING ââ */
+    .pricing-grid {
+      display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:720px; margin:0 auto;
+    }
+    .pricing-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:20px; padding:36px; position:relative; overflow:hidden;
+      transition:.25s all;
+    }
+    .pricing-card.featured {
+      border-color:rgba(124,58,237,0.5);
+      background:linear-gradient(135deg, rgba(124,58,237,0.08) 0%, var(--bg-card) 60%);
+    }
+    .pricing-card.featured::after {
+      content:'MOST POPULAR';
+      position:absolute; top:20px; right:-28px;
+      padding:4px 40px; background:var(--brand); font-size:9px; font-weight:700;
+      letter-spacing:.15em; color:#fff; transform:rotate(35deg);
+    }
+    .pricing-card:hover { transform:translateY(-4px); }
+    .pricing-icon { font-size:36px; margin-bottom:16px; }
+    .pricing-name { font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
+    .pricing-amount {
+      font-size:52px; font-weight:900; letter-spacing:-.04em;
+      color:var(--text-primary); line-height:1;
+    }
+    .pricing-amount sup { font-size:22px; font-weight:700; vertical-align:super; }
+    .pricing-per { font-size:13px; color:var(--text-muted); margin-top:4px; margin-bottom:24px; }
+    .pricing-features { list-style:none; display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
+    .pricing-features li {
+      display:flex; align-items:center; gap:10px;
+      font-size:14px; color:var(--text-sub);
+    }
+    .pricing-features li::before { content:'â'; color:var(--accent); font-weight:700; font-size:13px; }
+    .pricing-cta {
+      display:block; width:100%; padding:13px; border-radius:10px; font-size:14px; font-weight:700;
+      text-align:center; text-decoration:none; cursor:pointer; border:none; transition:.2s all;
+    }
+    .pricing-cta.primary { background:var(--brand); color:#fff; }
+    .pricing-cta.primary:hover { opacity:.85; }
+    .pricing-cta.secondary { background:var(--bg-raised); color:var(--text-primary); border:1px solid var(--border-light); }
+    .pricing-cta.secondary:hover { border-color:var(--brand-light); color:var(--brand-light); }
+
+    /* ââ FAQ ââ */
+    .faq-grid { display:flex; flex-direction:column; gap:0; border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+    .faq-item { border-bottom:1px solid var(--border); background:var(--bg-card); }
+    .faq-item:last-child { border-bottom:none; }
+    .faq-q {
+      width:100%; padding:22px 24px; display:flex; justify-content:space-between; align-items:center;
+      background:none; border:none; color:var(--text-primary); font-size:15px; font-weight:600;
+      cursor:pointer; text-align:left; transition:.2s color;
+    }
+    .faq-q:hover { color:var(--brand-light); }
+    .faq-q-arrow { font-size:18px; color:var(--text-muted); transition:.25s transform; flex-shrink:0; margin-left:16px; }
+    .faq-a {
+      padding:0 24px; max-height:0; overflow:hidden; transition:.3s all;
+      font-size:14px; color:var(--text-sub); line-height:1.7;
+    }
+    .faq-item.open .faq-a { max-height:200px; padding:0 24px 22px; }
+    .faq-item.open .faq-q-arrow { transform:rotate(180deg); }
+    .faq-item.open .faq-q { color:var(--brand-light); }
+
+    /* ââ CTA BANNER ââ */
+    .cta-section {
+      margin:0 40px 80px; border-radius:24px; padding:64px 48px;
+      background:linear-gradient(135deg, #1a0a3d 0%, #0f1a35 50%, #0a1f0a 100%);
+      border:1px solid rgba(124,58,237,0.3); text-align:center; position:relative; overflow:hidden;
+    }
+    .cta-glow {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:600px; height:300px;
+      background:radial-gradient(ellipse, rgba(124,58,237,0.2) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .cta-section h2 { font-size:36px; font-weight:800; letter-spacing:-.025em; position:relative; }
+    .cta-section p { font-size:16px; color:var(--text-sub); margin-top:12px; position:relative; }
+    .cta-section .hero-actions { position:relative; }
+
+    /* ââ FOOTER ââ */
+    footer {
+      border-top:1px solid var(--border); padding:40px;
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:13px; color:var(--text-muted); flex-wrap:wrap; gap:16px;
+    }
+    footer a { color:var(--text-muted); text-decoration:none; transition:.2s color; }
+    footer a:hover { color:var(--text-primary); }
+
+    /* ââ RESPONSIVE ââ */
+    @media (max-width:768px) {
+      nav { padding:0 20px; }
+      .nav-links { display:none; }
+      .hero { padding:100px 20px 60px; }
+      .section { padding:64px 20px; }
+      .models-section { padding:64px 20px; }
+      .steps-grid { grid-template-columns:1fr; }
+      .pricing-grid { grid-template-columns:1fr; }
+      .stat-item { padding:20px 24px; }
+      .showcase { flex-direction:column; align-items:center; }
+      .cta-section { margin:0 20px 60px; padding:48px 24px; }
+      footer { flex-direction:column; align-items:flex-start; }
+    }
+
+    /* model palette helpers */
+    .p1 { background:linear-gradient(160deg, #2d1b69 0%, #1a0d3f 100%); }
+    .p2 { background:linear-gradient(160deg, #1a2d1b 0%, #0d1f0e 100%); }
+    .p3 { background:linear-gradient(160deg, #2d2a1b 0%, #1f1a0d 100%); }
+    .p4 { background:linear-gradient(160deg, #1b2d2d 0%, #0d1f1f 100%); }
+    .p5 { background:linear-gradient(160deg, #2d1b2d 0%, #1f0d1f 100%); }
+    .p6 { background:linear-gradient(160deg, #1b1b2d 0%, #0d0d1f 100%); }
+    .p7 { background:linear-gradient(160deg, #2d2d1b 0%, #1f1f0d 100%); }
+
+    .badge-new  { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+    .badge-hot  { background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); }
+    .badge-top  { background:rgba(124,58,237,0.15); color:#9f67ff; border:1px solid rgba(124,58,237,0.3); }
+  
+</style>
+
+
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">â¦</div>
+    OpsAgents Studio
+  </a>
+  <div class="nav-links">
+    <a href="#how">How It Works</a>
+    <a href="#models">AI Models</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <a href="#pricing" class="nav-cta">Order Now â</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-kicker animate-fade">
+    <span class="hero-kicker-dot"></span>
+    AI-Powered Fashion Photography
+  </div>
+  <h1 class="animate-fade d-1">
+    Your Products.<br /><span>Worn by AI Models.</span>
+  </h1>
+  <p class="hero-sub animate-fade d-2">
+    Upload a white-background product photo. Choose from 20 diverse AI models.
+    Get back professional model photos in 3 business days â starting at $6.
+  </p>
+  <div class="hero-actions animate-fade d-3">
+    <a href="#pricing" class="btn-primary">Get Started â $6/image â</a>
+    <a href="#models" class="btn-secondary">View AI Models</a>
+  </div>
+
+  <!-- Before / After Showcase -->
+  <div class="showcase animate-fade d-4">
+    <div class="showcase-card">
+      <span class="showcase-label label-before">Before</span>
+      <div class="showcase-img-before">
+        ð
+      </div>
+    </div>
+    <div class="showcase-arrow">â</div>
+    <div class="showcase-card">
+      <span class="showcase-label label-after">After</span>
+      <div class="showcase-img-after">
+        <div class="showcase-model-silhouette"></div>
+        <span class="showcase-days">3 Business Days</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item animate-fade">
+    <div class="stat-num">20+</div>
+    <div class="stat-label">Diverse AI Models</div>
+  </div>
+  <div class="stat-item animate-fade d-1">
+    <div class="stat-num">$6</div>
+    <div class="stat-label">Per Image</div>
+  </div>
+  <div class="stat-item animate-fade d-2">
+    <div class="stat-num">3</div>
+    <div class="stat-label">Business Days</div>
+  </div>
+  <div class="stat-item animate-fade d-3">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">AI Generated</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div id="how">
+  <div class="section">
+    <div class="section-header animate-fade">
+      <div class="section-kicker">The Process</div>
+      <h2 class="section-title">Three steps to stunning model photos</h2>
+      <p class="section-sub">No photoshoots. No models to book. No studio rentals. Just upload, choose, and receive.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card animate-fade d-1">
+        <div class="step-num">1</div>
+        <div class="step-icon">ð¸</div>
+        <div class="step-title">Upload Your Product</div>
+        <p class="step-desc">Send us a clean photo of your clothing item on a white or neutral background. Flat-lay, hanger, or mannequin â all work.</p>
+        <span class="step-tag">Any background works</span>
+      </div>
+      <div class="step-card animate-fade d-2">
+        <div class="step-num">2</div>
+        <div class="step-icon">ð¤</div>
+        <div class="step-title">Pick Your AI Model</div>
+        <p class="step-desc">Browse our gallery of 20 diverse AI models â different ethnicities, body types, and style vibes. Pick the one that fits your brand.</p>
+        <span class="step-tag">20 models available</span>
+      </div>
+      <div class="step-card animate-fade d-3">
+        <div class="step-num">3</div>
+        <div class="step-icon">â¨</div>
+        <div class="step-title">Receive Your Photos</div>
+        <p class="step-desc">Within 3 business days, we deliver high-resolution model photos straight to your inbox. Ready for Shopify, Instagram, and beyond.</p>
+        <span class="step-tag">3 day turnaround</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODEL GALLERY -->
+<div id="models" class="models-section">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-header animate-fade">
+      <div class="section-kicker">AI Model Roster</div>
+      <h2 class="section-title">20 diverse AI models to choose from</h2>
+      <p class="section-sub">Every model is AI-generated, inclusive, and ready to wear your collection. Select a model when you place your order.</p>
+    </div>
+    <div class="models-grid" id="models-grid"></div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="pricing">
+  <div class="section" style="text-align:center;">
+    <div class="section-header animate-fade">
+      <div class="section-kicker">Simple Pricing</div>
+      <h2 class="section-title">No subscriptions. Pay per result.</h2>
+      <p class="section-sub" style="margin:12px auto 0;">One flat rate per deliverable. No hidden fees, no monthly charges, no contracts.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card animate-fade d-1">
+        <div class="pricing-icon">ð¼ï¸</div>
+        <div class="pricing-name">Model Photo</div>
+        <div class="pricing-amount"><sup>$</sup>6</div>
+        <div class="pricing-per">per image Â· delivered in 3 business days</div>
+        <ul class="pricing-features">
+          <li>1 high-resolution model photo</li>
+          <li>Your choice of AI model</li>
+          <li>Commercial usage rights</li>
+          <li>White-background product â styled model</li>
+          <li>Email delivery</li>
+        </ul>
+        <a href="/products/ai-model-photo" class="pricing-cta secondary">Order Photo</a>
+      </div>
+      <div class="pricing-card featured animate-fade d-2">
+        <div class="pricing-icon">ð¬</div>
+        <div class="pricing-name">Model Video</div>
+        <div class="pricing-amount"><sup>$</sup>30</div>
+        <div class="pricing-per">per video Â· delivered in 3 business days</div>
+        <ul class="pricing-features">
+          <li>1 short AI model video clip</li>
+          <li>Your choice of AI model</li>
+          <li>Commercial usage rights</li>
+          <li>Perfect for Instagram Reels & TikTok</li>
+          <li>Email delivery Â· HD quality</li>
+        </ul>
+        <a href="/products/ai-model-photo" class="pricing-cta primary">Order Video â</a>
+      </div>
+    </div>
+    <p style="margin-top:28px;font-size:13px;color:var(--text-muted);">
+      Need bulk orders? <a href="mailto:michal@msapps.mobi" style="color:var(--brand-light);text-decoration:none;">Contact us</a> for custom pricing on 10+ images.
+    </p>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div id="faq">
+  <div class="section" style="max-width:720px;">
+    <div class="section-header animate-fade">
+      <div class="section-kicker">FAQ</div>
+      <h2 class="section-title">Common questions</h2>
+    </div>
+    <div class="faq-grid animate-fade d-1">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What kind of product photos work best?
+          <span class="faq-q-arrow">â¾</span>
+        </button>
+        <div class="faq-a">White or neutral backgrounds work best â flat-lay, hanger, or mannequin shots all work. The cleaner the background, the better the result. We can also work with studio-lit shots on colored backgrounds.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I choose the model's pose?
+          <span class="faq-q-arrow">â¾</span>
+        </button>
+        <div class="faq-a">Currently each model comes with a default pose optimized for showcasing clothing. In a future update we'll offer pose selection. If you have specific requirements, mention them in your order notes and we'll do our best.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What image resolution do I receive?
+          <span class="faq-q-arrow">â¾</span>
+        </button>
+        <div class="faq-a">All photos are delivered at high resolution (minimum 1024Ã1536px, typically larger). They're ready for e-commerce product pages, social media, and print at small sizes.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I own the rights to use the images commercially?
+          <span class="faq-q-arrow">â¾</span>
+        </button>
+        <div class="faq-a">Yes. All delivered images include full commercial usage rights. You can use them on your website, Shopify store, Instagram, Amazon, advertising campaigns, and anywhere else.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I get a revision if I'm not happy?
+          <span class="faq-q-arrow">â¾</span>
+        </button>
+        <div class="faq-a">We offer one free revision per order if the model doesn't look right on your garment. Just reply to the delivery email with your feedback and we'll re-process it within 2 business days.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How do I send you my product image?
+          <span class="faq-q-arrow">â¾</span>
+        </button>
+        <div class="faq-a">After checkout, you'll receive an email from us with a Google Drive upload link. Simply upload your product image there and we'll get started within 24 hours.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA BANNER -->
+<div class="cta-section animate-fade">
+  <div class="cta-glow"></div>
+  <div class="section-kicker" style="color:var(--brand-light);">Ready to upgrade your store?</div>
+  <h2>Stop selling flat products.<br />Start selling looks.</h2>
+  <p>Join fashion brands and resellers using AI model photography to boost their conversions.</p>
+  <div class="hero-actions">
+    <a href="#pricing" class="btn-primary">Order Your First Photo â $6 â</a>
+    <a href="mailto:michal@msapps.mobi" class="btn-secondary">Talk to Us</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div style="font-weight:700;margin-bottom:4px;">OpsAgents ECommerce Photo Studio</div>
+    <div>studio.opsagents.agency Â· Powered by MSApps</div>
+  </div>
+  <div style="display:flex;gap:24px;">
+    <a href="mailto:michal@msapps.mobi">Contact</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div style="font-size:12px;color:var(--text-muted);">
+    Â© 2026 MSApps Â· All images AI-generated
+  </div>
+</footer>
+
+<script>
+// ââ MODEL DATA ââ
+const models = [
+  { name:"Sofia",     ethnicity:"Mediterranean",    style:"Editorial",   tags:["luxury","editorial"],      palette:"p1", badge:"top",  emoji:"ð©ð½" },
+  { name:"Aisha",     ethnicity:"West African",      style:"Bold",        tags:["streetwear","bold"],       palette:"p2", badge:"hot",  emoji:"ð©ð¿" },
+  { name:"Mei",       ethnicity:"East Asian",        style:"Minimalist",  tags:["minimal","clean"],         palette:"p6", badge:"new",  emoji:"ð©ð»" },
+  { name:"Priya",     ethnicity:"South Asian",       style:"Vibrant",     tags:["vibrant","fashion"],       palette:"p3", badge:"",     emoji:"ð©ð½" },
+  { name:"Luna",      ethnicity:"Latina",            style:"Casual-Chic", tags:["casual","chic"],           palette:"p5", badge:"hot",  emoji:"ð©ð½" },
+  { name:"Zara",      ethnicity:"Middle Eastern",    style:"Luxury",      tags:["luxury","modest"],         palette:"p1", badge:"top",  emoji:"ð©ð»" },
+  { name:"Maya",      ethnicity:"Black American",    style:"Streetwear",  tags:["streetwear","urban"],      palette:"p2", badge:"",     emoji:"ð©ð¿" },
+  { name:"Isla",      ethnicity:"Northern European", style:"Clean",       tags:["minimal","classic"],       palette:"p4", badge:"new",  emoji:"ð©ð¼" },
+  { name:"Nadia",     ethnicity:"Eastern European",  style:"Edgy",        tags:["edgy","editorial"],        palette:"p6", badge:"",     emoji:"ð©ð»" },
+  { name:"Fatima",    ethnicity:"North African",     style:"Modest",      tags:["modest","elegant"],        palette:"p3", badge:"new",  emoji:"ð©ð½" },
+  { name:"Yuna",      ethnicity:"Korean",            style:"K-Fashion",   tags:["k-fashion","trendy"],      palette:"p5", badge:"hot",  emoji:"ð©ð»" },
+  { name:"Carmen",    ethnicity:"Spanish",           style:"Mediterranean",tags:["mediterranean","bold"],   palette:"p7", badge:"",     emoji:"ð©ð½" },
+  { name:"Asha",      ethnicity:"Ethiopian",         style:"High Fashion", tags:["high-fashion","elite"],   palette:"p1", badge:"top",  emoji:"ð©ð¿" },
+  { name:"Lily",      ethnicity:"Australian",        style:"Casual",      tags:["casual","beach"],          palette:"p4", badge:"",     emoji:"ð©ð¼" },
+  { name:"Nia",       ethnicity:"Caribbean",         style:"Vibrant",     tags:["vibrant","colorful"],      palette:"p2", badge:"new",  emoji:"ð©ð¾" },
+  { name:"Hana",      ethnicity:"Japanese",          style:"Minimal",     tags:["minimal","zen"],           palette:"p6", badge:"",     emoji:"ð©ð»" },
+  { name:"Valentina", ethnicity:"Brazilian",         style:"Bold",        tags:["bold","confident"],        palette:"p5", badge:"hot",  emoji:"ð©ð½" },
+  { name:"Sara",      ethnicity:"Scandinavian",      style:"Clean",       tags:["clean","nordic"],          palette:"p4", badge:"",     emoji:"ð©ð¼" },
+  { name:"Amara",     ethnicity:"Nigerian",          style:"Afropunk",    tags:["afropunk","artistic"],     palette:"p2", badge:"top",  emoji:"ð©ð¿" },
+  { name:"Elena",     ethnicity:"Russian",           style:"Editorial",   tags:["editorial","sleek"],       palette:"p1", badge:"",     emoji:"ð©ð»" },
+];
+
+const badgeClass = { top:"badge-top", hot:"badge-hot", new:"badge-new", "":"" };
+const badgeLabel = { top:"â­ Top Pick", hot:"ð¥ Hot", new:"â¦ New", "":"" };
+
+function renderModels() {
+  const grid = document.getElementById('models-grid');
+  models.forEach((m, i) => {
+    const delay = Math.min(i * 0.04, 0.8);
+    grid.innerHTML += `
+      <div class="model-card animate-fade" style="animation-delay:${delay}s">
+        <div class="model-avatar ${m.palette}">
+          <div class="model-avatar-inner">
+            <div class="model-silhouette">${m.emoji}</div>
+          </div>
+          <div class="model-overlay"></div>
+          ${m.badge ? `<span class="model-badge ${badgeClass[m.badge]}">${badgeLabel[m.badge]}</span>` : ''}
+        </div>
+        <div class="model-info">
+          <div class="model-name">${m.name}</div>
+          <div class="model-ethnicity">${m.ethnicity} Â· ${m.style}</div>
+          <div class="model-tags">${m.tags.map(t => `<span class="model-tag">${t}</span>`).join('')}</div>
+          <button class="model-select-btn" onclick="selectModel('${m.name}')">Select Model</button>
+        </div>
+      </div>`;
+  });
+}
+
+function selectModel(name) {
+  document.getElementById('pricing').scrollIntoView({ behavior:'smooth' });
+  setTimeout(() => {
+    alert(`Model "${name}" selected! Choose your package below and proceed to order. Mention "${name}" in your order notes.`);
+  }, 600);
+}
+
+// ââ FAQ ââ
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ââ INTERSECTION OBSERVER FOR ANIMATIONS ââ
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.style.animationPlayState = 'running'; } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.animate-fade, .animate-up').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  observer.observe(el);
+});
+
+renderModels();
+</script>
+
+
+{% schema %}
+{
+  "name": "Studio Landing Page",
+  "settings": []
+}
+{% endschema %}
