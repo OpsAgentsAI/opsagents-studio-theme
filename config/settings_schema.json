@@ -4,8 +4,8 @@
     "theme_name": "Horizon",
     "theme_version": "3.5.1",
     "theme_author": "Shopify",
-    "theme_documentation_url": "https:\/\/help.shopify.com\/manual\/online-store\/themes",
-    "theme_support_url": "https:\/\/support.shopify.com\/"
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://support.shopify.com/"
   },
   {
     "name": "t:names.logo_and_favicon",
@@ -1766,7 +1766,7 @@
         "type": "url",
         "id": "empty_cart_button_link",
         "label": "t:settings.empty_cart_button_link",
-        "default": "\/collections\/all"
+        "default": "/collections/all"
       },
       {
         "type": "header",
@@ -2282,6 +2282,45 @@
           }
         ],
         "default": "equal-width-buttons"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social sharing"
+      },
+      {
+        "type": "image_picker",
+        "id": "social_sharing_image",
+        "label": "Social sharing image",
+        "info": "Displayed when sharing on social media. Recommended: 1200 x 630 px. Used as og:image fallback when no product image is set."
+      },
+      {
+        "type": "header",
+        "content": "Social links"
+      },
+      {
+        "type": "url",
+        "id": "social_twitter_link",
+        "label": "X (Twitter)"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook_link",
+        "label": "Facebook"
+      },
+      {
+        "type": "url",
+        "id": "social_instagram_link",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_linkedin_link",
+        "label": "LinkedIn"
       }
     ]
   }
