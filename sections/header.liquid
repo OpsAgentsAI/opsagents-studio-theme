@@ -296,6 +296,7 @@
   }
 </script>
 
+{%- unless template.name == 'index' -%}
 <header-component
   id="header-component"
   class="{{ class }}"
@@ -401,6 +402,7 @@
     </div>
   {% endif %}
 </header-component>
+{%- endunless -%}
 
 <script
   src="{{ 'header.js' | asset_url }}"

@@ -76,6 +76,12 @@
       transition:.2s opacity; cursor:pointer;
     }
     .nav-cta:hover { opacity:.85; }
+    .nav-actions { display:flex; align-items:center; gap:18px; }
+    .nav-icon-link {
+      font-size:13px; font-weight:500; color:var(--text-sub);
+      text-decoration:none; transition:.2s color;
+    }
+    .nav-icon-link:hover { color:var(--text-primary); }
 
     /* ââ HERO ââ */
     .hero {
@@ -422,7 +428,13 @@
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
   </div>
-  <a href="#pricing" class="nav-cta">Order Now â</a>
+  <div class="nav-actions">
+    <a href="{{ routes.search_url }}" aria-label="Search" class="nav-icon-link">Search</a>
+    <a href="{{ routes.cart_url }}" aria-label="Cart" class="nav-icon-link">
+      Cart{%- if cart.item_count > 0 -%} ({{ cart.item_count }}){%- endif -%}
+    </a>
+    <a href="#pricing" class="nav-cta">Order Now â</a>
+  </div>
 </nav>
 
 <!-- HERO -->
