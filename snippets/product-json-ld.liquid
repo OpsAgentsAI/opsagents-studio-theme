@@ -1,0 +1,61 @@
+{% doc %}
+  Renders schema.org/Product JSON-LD for SEO rich results.
+
+  Replaces Shopify's default `| structured_data` filter to add:
+    - dynamic image (with width: 1200)
+    - description fallback chain (product.description → description_tag metafield → shop.description → generic)
+    - SKU when present
+    - brand from shop.name
+    - offer URL bound to selected/first-available variant (price stays correct on variant change at server-render time)
+
+  @param {object} product - The product to describe.
+{% enddoc %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign og_img = product.featured_media.preview_image | default: product.featured_image
+
+  assign description = product.description | strip_html | strip_newlines | truncate: 5000, ''
+  if description == blank
+    assign description = product.metafields.global.description_tag
+  endif
+  if description == blank
+    assign description = shop.description
+  endif
+  if description == blank
+    assign description = product.title | append: ' by ' | append: shop.name
+  endif
+
+  assign availability = 'https://schema.org/OutOfStock'
+  if current_variant.available
+    assign availability = 'https://schema.org/InStock'
+  endif
+
+  assign price_value = current_variant.price | money_without_currency | replace: ',', ''
+-%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "@id": "{{ shop.url }}{{ product.url }}#product",
+  "name": {{ product.title | json }},
+  "description": {{ description | json }},
+  "url": "{{ shop.url }}{{ product.url }}",
+  {%- if og_img %}
+  "image": [{{ og_img | image_url: width: 1200 | prepend: 'https:' | json }}],
+  {%- endif %}
+  "brand": { "@type": "Brand", "name": {{ shop.name | json }} },
+  {%- if current_variant.sku != blank %}
+  "sku": {{ current_variant.sku | json }},
+  {%- endif %}
+  "offers": {
+    "@type": "Offer",
+    "@id": "{{ shop.url }}{{ product.url }}?variant={{ current_variant.id }}#offer",
+    "url": "{{ shop.url }}{{ product.url }}?variant={{ current_variant.id }}",
+    "price": "{{ price_value }}",
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "availability": "{{ availability }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+}
+</script>
