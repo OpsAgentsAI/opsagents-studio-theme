@@ -408,6 +408,9 @@
 ></script>
 
 {% stylesheet %}
+  /* ui-todo-35: suppress header on homepage */
+  .template-index header-component,
+  .template-index .shopify-section-header { display: none !important; }
   body {
     --header-height: 60px;
     --header-group-height: var(--header-height);
