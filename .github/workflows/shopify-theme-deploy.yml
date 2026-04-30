@@ -30,10 +30,10 @@ jobs:
       - name: Install Shopify CLI
         run: npm install -g @shopify/cli @shopify/theme
 
-      - name: Push theme to u5rtvy-0a
+      - name: Push theme to https-studio-opsagents-agency
         env:
-          SHOPIFY_FLAG_STORE: u5rtvy-0a.myshopify.com
+          SHOPIFY_FLAG_STORE: https-studio-opsagents-agency.myshopify.com
           # The Shopify CLI reads SHOPIFY_CLI_THEME_TOKEN from env directly —
           # we expose the repo secret under the same name.
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
-        run: shopify theme push --path . --unpublished --theme "OpsAgents Studio" --json
+        run: shopify theme push --path . --live --allow-live --json
