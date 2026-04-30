@@ -1,32 +1,46 @@
 {% doc %}
   Renders all meta tags for the page including Open Graph, Twitter Cards, and SEO tags.
 
+  Closes Trello cards #34 (B52wOwj0), #72 (WA2KzCNJ), #58 (w86UvceX):
+  - Adds a real meta description fallback for the homepage and any
+    template that has no per-page description set.
+  - Adds an og:image fallback (theme asset `og-cover.jpg`) so social
+    previews always have an image even when a page has no `page_image`.
+  - Emits schema.org/Product JSON-LD on product pages for Google rich
+    results (price, availability, SKU, brand).
+
   @param {object} [product] - The product object, available on product pages for price meta tags.
 {% enddoc %}
 
 <meta charset="utf-8">
-<meta
-  http-equiv="X-UA-Compatible"
-  content="IE=edge"
->
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-<meta
-  name="view-transition"
-  content="same-origin"
->
-<meta
-  name="theme-color"
-  content=""
->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="view-transition" content="same-origin">
+<meta name="theme-color" content="">
 
 {%- liquid
+  assign default_homepage_desc = 'AI-generated ecommerce product photography & video. Upload a product photo, choose an AI model, get studio-grade model photos in 3 business days — from $6/image. Commercial rights included.'
+
   assign og_title = page_title | default: shop.name
   assign og_url = canonical_url | default: request.origin
   assign og_type = 'website'
-  assign og_description = page_description | default: shop.description | default: shop.name
+
+  if page_description != blank
+    assign meta_desc = page_description
+  elsif template.name == 'index'
+    assign meta_desc = default_homepage_desc
+  elsif template.name == 'product' and product != blank
+    assign meta_desc = product.description | strip_html | truncate: 155
+  elsif template.name == 'collection' and collection != blank
+    assign meta_desc = collection.description | strip_html | truncate: 155
+  elsif shop.description != blank
+    assign meta_desc = shop.description
+  else
+    assign meta_desc = default_homepage_desc
+  endif
+  assign meta_desc = meta_desc | strip_html | truncate: 160
+
+  assign og_description = meta_desc
 
   if request.page_type == 'product'
     assign og_type = 'product'
@@ -35,77 +49,41 @@
   elsif request.page_type == 'password'
     assign og_url = request.origin
   endif
-%}
+-%}
 
-<meta
-  property="og:site_name"
-  content="{{ shop.name }}"
->
-<meta
-  property="og:url"
-  content="{{ og_url }}"
->
-<meta
-  property="og:title"
-  content="{{ og_title | escape }}"
->
-<meta
-  property="og:type"
-  content="{{ og_type }}"
->
-<meta
-  property="og:description"
-  content="{{ og_description | escape }}"
->
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:url" content="{{ og_url }}">
+<meta property="og:title" content="{{ og_title | escape }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:description" content="{{ og_description | escape }}">
 
 {%- if page_image -%}
-  <meta
-    property="og:image"
-    content="http:{{ page_image | image_url }}"
-  >
-  <meta
-    property="og:image:secure_url"
-    content="https:{{ page_image | image_url }}"
-  >
-  <meta
-    property="og:image:width"
-    content="{{ page_image.width }}"
-  >
-  <meta
-    property="og:image:height"
-    content="{{ page_image.height }}"
-  >
+  <meta property="og:image" content="http:{{ page_image | image_url }}">
+  <meta property="og:image:secure_url" content="https:{{ page_image | image_url }}">
+  <meta property="og:image:width" content="{{ page_image.width }}">
+  <meta property="og:image:height" content="{{ page_image.height }}">
+{%- else -%}
+  <meta property="og:image" content="{{ 'og-cover.jpg' | asset_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
 {%- endif -%}
 
 {%- if request.page_type == 'product' -%}
-  <meta
-    property="og:price:amount"
-    content="{{ product.price | money_without_currency | strip_html }}"
-  >
-  <meta
-    property="og:price:currency"
-    content="{{ cart.currency.iso_code }}"
-  >
+  <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
+  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
 {%- endif -%}
 
 {%- if settings.social_twitter_link != blank -%}
-  <meta
-    name="twitter:site"
-    content="{{ settings.social_twitter_link | split: 'twitter.com/' | last | prepend: '@' }}"
-  >
+  <meta name="twitter:site" content="{{ settings.social_twitter_link | split: 'twitter.com/' | last | prepend: '@' }}">
 {%- endif -%}
-<meta
-  name="twitter:card"
-  content="summary_large_image"
->
-<meta
-  name="twitter:title"
-  content="{{ og_title | escape }}"
->
-<meta
-  name="twitter:description"
-  content="{{ og_description | escape }}"
->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title | escape }}">
+<meta name="twitter:description" content="{{ og_description | escape }}">
+{%- if page_image -%}
+  <meta name="twitter:image" content="https:{{ page_image | image_url }}">
+{%- else -%}
+  <meta name="twitter:image" content="{{ 'og-cover.jpg' | asset_url }}">
+{%- endif -%}
 
 <title>
   {{ page_title }}
@@ -114,14 +92,39 @@
   {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
 
-<link
-  rel="canonical"
-  href="{{ canonical_url }}"
->
+<link rel="canonical" href="{{ canonical_url }}">
 
-{% if page_description %}
-  <meta
-    name="description"
-    content="{{ page_description | escape }}"
-  >
-{% endif %}
+<meta name="description" content="{{ meta_desc | escape }}">
+
+{%- if request.page_type == 'product' and product != blank -%}
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- capture availability -%}
+    {%- if current_variant.available -%}https://schema.org/InStock{%- else -%}https://schema.org/OutOfStock{%- endif -%}
+  {%- endcapture -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "description": {{ product.description | strip_html | truncate: 500 | json }},
+    "image": [
+      {%- for img in product.images limit: 5 -%}
+        {{ img | image_url: width: 1200 | prepend: 'https:' | json }}{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ],
+    "sku": {{ current_variant.sku | json }},
+    "brand": {
+      "@type": "Brand",
+      "name": {{ shop.name | json }}
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": {{ shop.url | append: product.url | json }},
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "price": "{{ current_variant.price | money_without_currency | strip_html | replace: ',', '' }}",
+      "availability": "{{ availability | strip }}",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  }
+  </script>
+{%- endif -%}
