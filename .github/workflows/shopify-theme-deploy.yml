@@ -1,0 +1,39 @@
+name: Deploy Studio theme
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/**"
+      - "blocks/**"
+      - "config/**"
+      - "layout/**"
+      - "locales/**"
+      - "sections/**"
+      - "snippets/**"
+      - "templates/**"
+      - ".github/workflows/shopify-theme-deploy.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli @shopify/theme
+
+      - name: Push theme to u5rtvy-0a
+        env:
+          SHOPIFY_FLAG_STORE: u5rtvy-0a.myshopify.com
+          # The Shopify CLI reads SHOPIFY_CLI_THEME_TOKEN from env directly —
+          # we expose the repo secret under the same name.
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+        run: shopify theme push --path . --unpublished --theme "OpsAgents Studio" --json
