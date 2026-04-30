@@ -713,6 +713,7 @@ function selectModel(name) {
     alert(`Model "${name}" selected! Choose your package below and proceed to order. Mention "${name}" in your order notes.`);
   }, 600);
 }
+window.selectModel = selectModel; // fix #25: expose globally for onclick handlers
 
 // ââ FAQ ââ
 function toggleFaq(btn) {
