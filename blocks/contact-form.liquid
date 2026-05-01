@@ -63,6 +63,8 @@
         name="contact[name]"
         value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
         placeholder="{{ 'blocks.contact_form.name' | t }}"
+        required
+        aria-required="true"
       >
 
       <label
@@ -81,6 +83,7 @@
         spellcheck="false"
         autocapitalize="off"
         value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+        required
         aria-required="true"
         {% if form.errors contains 'email' and form.id == form_id %}
           aria-invalid="true"
@@ -119,6 +122,8 @@
       class="contact-form__input contact-form__input--textarea"
       name="contact[body]"
       placeholder="{{ 'blocks.contact_form.comment' | t }}"
+      required
+      aria-required="true"
     >
       {{- form.body -}}
     </textarea>
