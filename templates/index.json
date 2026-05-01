@@ -1,15 +1,19 @@
 /*
- * -------------------------------------------------------------
+ * ------------------------------------------------------------
  * IMPORTANT: The contents of this file are auto-generated.
  *
  * This file may be updated by the Shopify admin theme editor
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
- * --------------------------------------------------------------
+ * ------------------------------------------------------------
  */{
   "sections": {
     "studio_landing_main": {
       "type": "studio-landing",
+      "settings": {}
+    },
+    "studio_landing_fix_main": {
+      "type": "studio-landing-fix",
       "settings": {}
     },
     "hero_jVaWmY": {
@@ -283,12 +287,14 @@
         "gap": 28,
         "color_scheme": "scheme-1",
         "padding-block-start": 48,
-        "padding-block-end": 48
+        "padding-inline-start": 0,
+        "padding-inline-end": 0
       }
     }
   },
   "order": [
     "studio_landing_main",
+    "studio_landing_fix_main",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]

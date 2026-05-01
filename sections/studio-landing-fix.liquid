@@ -1,0 +1,60 @@
+{%- comment -%}
+  studio-landing-fix.liquid
+  Fix #25 — selectModel/toggleFaq window-export doesn't survive Shopify Horizon's
+  section-script wrapping. This standalone section installs a document-level
+  click delegator that handles .model-select-btn (extracting the model name
+  from either data-model-name or the inline onclick="selectModel('Foo')" attr)
+  and .faq-q (toggling the parent .faq-item open/closed). Self-contained — does
+  not depend on any function being on window.
+{%- endcomment -%}
+<script>
+  (function () {
+    function selectModelFix(name) {
+      var p = document.getElementById('pricing');
+      if (p && p.scrollIntoView) p.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(function () {
+        try {
+          alert('Model "' + name + '" selected! Choose your package below and proceed to order. Mention "' + name + '" in your order notes.');
+        } catch (e) {}
+      }, 600);
+    }
+    function toggleFaqFix(btn) {
+      var item = btn && btn.closest && btn.closest('.faq-item');
+      if (!item) return;
+      var isOpen = item.classList.contains('open');
+      var siblings = document.querySelectorAll('.faq-item');
+      for (var i = 0; i < siblings.length; i++) siblings[i].classList.remove('open');
+      if (!isOpen) item.classList.add('open');
+    }
+    document.addEventListener('click', function (e) {
+      if (!e.target || !e.target.closest) return;
+      var sel = e.target.closest('.model-select-btn');
+      if (sel) {
+        var name = sel.dataset && sel.dataset.modelName;
+        if (!name) {
+          var oc = sel.getAttribute('onclick') || '';
+          var m = oc.match(/['"]([^'"]+)['"]/);
+          name = m ? m[1] : '';
+        }
+        if (name) {
+          e.preventDefault();
+          selectModelFix(name);
+        }
+        return;
+      }
+      var fq = e.target.closest('.faq-q');
+      if (fq) {
+        e.preventDefault();
+        toggleFaqFix(fq);
+        return;
+      }
+    }, true);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Studio Landing Fix (#25)",
+  "settings": []
+}
+{% endschema %}
