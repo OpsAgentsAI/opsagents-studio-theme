@@ -636,46 +636,46 @@
     </div>
     <div class="faq-grid animate-fade d-1">
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" id="faq-q-1" aria-expanded="false" aria-controls="faq-a-1" onclick="toggleFaq(this)">
           What kind of product photos work best?
-          <span class="faq-q-arrow">â¾</span>
+          <span class="faq-q-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="faq-a">White or neutral backgrounds work best â flat-lay, hanger, or mannequin shots all work. The cleaner the background, the better the result. We can also work with studio-lit shots on colored backgrounds.</div>
+        <div class="faq-a" id="faq-a-1" role="region" aria-labelledby="faq-q-1">White or neutral backgrounds work best â flat-lay, hanger, or mannequin shots all work. The cleaner the background, the better the result. We can also work with studio-lit shots on colored backgrounds.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" id="faq-q-2" aria-expanded="false" aria-controls="faq-a-2" onclick="toggleFaq(this)">
           Can I choose the model's pose?
-          <span class="faq-q-arrow">â¾</span>
+          <span class="faq-q-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="faq-a">Currently each model comes with a default pose optimized for showcasing clothing. In a future update we'll offer pose selection. If you have specific requirements, mention them in your order notes and we'll do our best.</div>
+        <div class="faq-a" id="faq-a-2" role="region" aria-labelledby="faq-q-2">Currently each model comes with a default pose optimized for showcasing clothing. In a future update we'll offer pose selection. If you have specific requirements, mention them in your order notes and we'll do our best.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" id="faq-q-3" aria-expanded="false" aria-controls="faq-a-3" onclick="toggleFaq(this)">
           What image resolution do I receive?
-          <span class="faq-q-arrow">â¾</span>
+          <span class="faq-q-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="faq-a">All photos are delivered at high resolution (minimum 1024Ã1536px, typically larger). They're ready for e-commerce product pages, social media, and print at small sizes.</div>
+        <div class="faq-a" id="faq-a-3" role="region" aria-labelledby="faq-q-3">All photos are delivered at high resolution (minimum 1024Ã1536px, typically larger). They're ready for e-commerce product pages, social media, and print at small sizes.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" id="faq-q-4" aria-expanded="false" aria-controls="faq-a-4" onclick="toggleFaq(this)">
           Do I own the rights to use the images commercially?
-          <span class="faq-q-arrow">â¾</span>
+          <span class="faq-q-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="faq-a">Yes. All delivered images include full commercial usage rights. You can use them on your website, Shopify store, Instagram, Amazon, advertising campaigns, and anywhere else.</div>
+        <div class="faq-a" id="faq-a-4" role="region" aria-labelledby="faq-q-4">Yes. All delivered images include full commercial usage rights. You can use them on your website, Shopify store, Instagram, Amazon, advertising campaigns, and anywhere else.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" id="faq-q-5" aria-expanded="false" aria-controls="faq-a-5" onclick="toggleFaq(this)">
           Can I get a revision if I'm not happy?
-          <span class="faq-q-arrow">â¾</span>
+          <span class="faq-q-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="faq-a">We offer one free revision per order if the model doesn't look right on your garment. Just reply to the delivery email with your feedback and we'll re-process it within 2 business days.</div>
+        <div class="faq-a" id="faq-a-5" role="region" aria-labelledby="faq-q-5">We offer one free revision per order if the model doesn't look right on your garment. Just reply to the delivery email with your feedback and we'll re-process it within 2 business days.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button" id="faq-q-6" aria-expanded="false" aria-controls="faq-a-6" onclick="toggleFaq(this)">
           How do I send you my product image?
-          <span class="faq-q-arrow">â¾</span>
+          <span class="faq-q-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="faq-a">After checkout, you'll receive an email from us with a Google Drive upload link. Simply upload your product image there and we'll get started within 24 hours.</div>
+        <div class="faq-a" id="faq-a-6" role="region" aria-labelledby="faq-q-6">After checkout, you'll receive an email from us with a Google Drive upload link. Simply upload your product image there and we'll get started within 24 hours.</div>
       </div>
     </div>
   </div>
@@ -727,8 +727,16 @@ window.selectModel = selectModel; // fix #25: expose globally for onclick handle
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
   const isOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
-  if (!isOpen) item.classList.add('open');
+  // Close all and reset aria-expanded
+  document.querySelectorAll('.faq-item').forEach(el => {
+    el.classList.remove('open');
+    const b = el.querySelector('.faq-q');
+    if (b) b.setAttribute('aria-expanded', 'false');
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
 }
 
 // ââ INTERSECTION OBSERVER FOR ANIMATIONS ââ
