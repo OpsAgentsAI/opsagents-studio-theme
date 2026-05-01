@@ -712,7 +712,7 @@
 
 <script>
 // Card #65 homepage gallery is now server-rendered via snippets/model_card.liquid
-// (Liquid {% for %} over all_products['ai-model-photo'].media). Removed JS `models = [...]`
+// (Liquid for-loop over all_products['ai-model-photo'].media). Removed JS `models = [...]`
 // array and `renderModels()` to kill the hand-typed-data drift class behind #73 and #25.
 
 function selectModel(name) {
