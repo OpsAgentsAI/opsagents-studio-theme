@@ -1,0 +1,107 @@
+{% doc %}
+  Renders a single AI Model card on the homepage gallery (#models section).
+  Server-side replacement for the JS-only `models = [...]` + `renderModels()` pattern
+  that previously emitted emoji silhouettes. Now consumes real product media uploaded
+  to all_products['ai-model-photo'].media.
+
+  Card #65 (P1 — replace garbage non-human/clothes-only photos in AI Models gallery)
+  homepage half. Architectural fit: Priority Action #1 from
+  /docs/design-system-audit.md (snippet extraction kills the hand-typed-data drift class
+  that caused #73, #25).
+
+  @param {object}  media     - Product media (MediaImage) for the model photo. Optional.
+                               When nil, falls back to a neutral silhouette so the grid
+                               still renders if the catalog has fewer than 20 photos.
+  @param {string}  name      - Model display name, e.g. "Sofia".
+  @param {string}  ethnicity - Heritage descriptor, e.g. "Mediterranean".
+  @param {string}  style     - Style descriptor, e.g. "Editorial".
+  @param {array}   tags      - Tag strings, e.g. ["luxury","editorial"].
+  @param {string}  palette   - Palette class slug "p1"…"p7" (background gradient).
+  @param {string}  [badge]   - Badge type: "top" | "hot" | "new" | "" (none).
+  @param {number}  index     - 0-based card index (drives staggered animation delay).
+
+  @example
+    {%- liquid
+      assign tags = 'luxury,editorial' | split: ','
+      assign m = all_products['ai-model-photo'].media.first
+    -%}
+    {% render 'model_card',
+        media: m, name: 'Sofia', ethnicity: 'Mediterranean', style: 'Editorial',
+        tags: tags, palette: 'p1', badge: 'top', index: 0 %}
+{% enddoc %}
+
+{%- liquid
+  assign card_delay = index | times: 0.04
+  if card_delay > 0.8
+    assign card_delay = 0.8
+  endif
+
+  assign badge_class = ''
+  assign badge_label = ''
+  case badge
+    when 'top'
+      assign badge_class = 'badge-top'
+      assign badge_label = 'Top Pick'
+    when 'hot'
+      assign badge_class = 'badge-hot'
+      assign badge_label = 'Hot'
+    when 'new'
+      assign badge_class = 'badge-new'
+      assign badge_label = 'New'
+  endcase
+-%}
+
+<div class="model-card animate-fade" style="--card-delay: {{ card_delay }}s">
+  <div class="model-avatar {{ palette }}">
+    {%- if media -%}
+      {{
+        media
+        | image_url: width: 540
+        | image_tag:
+            class: 'model-img',
+            alt: name,
+            loading: 'lazy',
+            sizes: '(min-width: 1024px) 240px, (min-width: 640px) 33vw, 50vw',
+            widths: '180,240,360,540,720'
+      }}
+    {%- else -%}
+      <div class="model-avatar-inner"><div class="model-silhouette" aria-hidden="true">&#x1F464;</div></div>
+    {%- endif -%}
+    <div class="model-overlay"></div>
+    {%- if badge_label != blank -%}
+      <span class="model-badge {{ badge_class }}">{{ badge_label }}</span>
+    {%- endif -%}
+  </div>
+  <div class="model-info">
+    <div class="model-name">{{ name }}</div>
+    <div class="model-ethnicity">{{ ethnicity }} &middot; {{ style }}</div>
+    <div class="model-tags">
+      {%- for tag in tags -%}
+        <span class="model-tag">{{ tag | strip }}</span>
+      {%- endfor -%}
+    </div>
+    <button
+      type="button"
+      class="model-select-btn"
+      onclick="selectModel('{{ name | escape }}')"
+      aria-label="Select model {{ name | escape }}"
+    >Select Model</button>
+  </div>
+</div>
+
+{% stylesheet %}
+  .model-card { animation-delay: var(--card-delay, 0s); }
+  .model-card .model-avatar { position: relative; }
+  .model-card .model-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.001);
+    transition: transform 0.4s ease;
+  }
+  .model-card:hover .model-img { transform: scale(1.04); }
+  .model-card .model-img:focus-visible { outline: 2px solid var(--brand-light, #9f67ff); outline-offset: 2px; }
+{% endstylesheet %}

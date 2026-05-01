@@ -525,7 +525,61 @@
       <h2 class="section-title">20 diverse AI models to choose from</h2>
       <p class="section-sub">Every model is AI-generated, inclusive, and ready to wear your collection. Select a model when you place your order.</p>
     </div>
-    <div class="models-grid" id="models-grid"></div>
+    {%- comment -%}
+      Card #65 (homepage half) — server-rendered model gallery.
+      Replaces the prior `<div id="models-grid"></div>` + JS `renderModels()` pattern.
+      Curated personas (Sofia, Aisha, Mei, …) each map to one product media on
+      all_products['ai-model-photo']. When the product has fewer than 20 media,
+      remaining cards fall back to a silhouette via the snippet's nil-media branch.
+    {%- endcomment -%}
+    {%- liquid
+      assign model_product = all_products['ai-model-photo']
+      assign all_media = model_product.media
+
+      assign model_data = 'Sofia|Mediterranean|Editorial|luxury,editorial|p1|top'
+      assign model_data = model_data | append: '||Aisha|West African|Bold|streetwear,bold|p2|hot'
+      assign model_data = model_data | append: '||Mei|East Asian|Minimalist|minimal,clean|p6|new'
+      assign model_data = model_data | append: '||Priya|South Asian|Vibrant|vibrant,fashion|p3|'
+      assign model_data = model_data | append: '||Luna|Latina|Casual-Chic|casual,chic|p5|hot'
+      assign model_data = model_data | append: '||Zara|Middle Eastern|Luxury|luxury,modest|p1|top'
+      assign model_data = model_data | append: '||Maya|Black American|Streetwear|streetwear,urban|p2|'
+      assign model_data = model_data | append: '||Isla|Northern European|Clean|minimal,classic|p4|new'
+      assign model_data = model_data | append: '||Nadia|Eastern European|Edgy|edgy,editorial|p6|'
+      assign model_data = model_data | append: '||Fatima|North African|Modest|modest,elegant|p3|new'
+      assign model_data = model_data | append: '||Yuna|Korean|K-Fashion|k-fashion,trendy|p5|hot'
+      assign model_data = model_data | append: '||Carmen|Spanish|Mediterranean|mediterranean,bold|p7|'
+      assign model_data = model_data | append: '||Asha|Ethiopian|High Fashion|high-fashion,elite|p1|top'
+      assign model_data = model_data | append: '||Lily|Australian|Casual|casual,beach|p4|'
+      assign model_data = model_data | append: '||Nia|Caribbean|Vibrant|vibrant,colorful|p2|new'
+      assign model_data = model_data | append: '||Hana|Japanese|Minimal|minimal,zen|p6|'
+      assign model_data = model_data | append: '||Valentina|Brazilian|Bold|bold,confident|p5|hot'
+      assign model_data = model_data | append: '||Sara|Scandinavian|Clean|clean,nordic|p4|'
+      assign model_data = model_data | append: '||Amara|Nigerian|Afropunk|afropunk,artistic|p2|top'
+      assign model_data = model_data | append: '||Elena|Russian|Editorial|editorial,sleek|p1|'
+      assign model_rows = model_data | split: '||'
+    -%}
+    <div class="models-grid" id="models-grid">
+      {%- for row in model_rows -%}
+        {%- assign parts = row | split: '|' -%}
+        {%- assign m_name = parts[0] -%}
+        {%- assign m_ethnicity = parts[1] -%}
+        {%- assign m_style = parts[2] -%}
+        {%- assign m_tags = parts[3] | split: ',' -%}
+        {%- assign m_palette = parts[4] -%}
+        {%- assign m_badge = parts[5] -%}
+        {%- assign m_media = all_media[forloop.index0] -%}
+        {%- render 'model_card',
+            media: m_media,
+            name: m_name,
+            ethnicity: m_ethnicity,
+            style: m_style,
+            tags: m_tags,
+            palette: m_palette,
+            badge: m_badge,
+            index: forloop.index0
+        -%}
+      {%- endfor -%}
+    </div>
   </div>
 </div>
 
@@ -657,55 +711,9 @@
 </footer>
 
 <script>
-// ââ MODEL DATA ââ
-const models = [
-  { name:"Sofia",     ethnicity:"Mediterranean",    style:"Editorial",   tags:["luxury","editorial"],      palette:"p1", badge:"top",  emoji:"ð©ð½" },
-  { name:"Aisha",     ethnicity:"West African",      style:"Bold",        tags:["streetwear","bold"],       palette:"p2", badge:"hot",  emoji:"ð©ð¿" },
-  { name:"Mei",       ethnicity:"East Asian",        style:"Minimalist",  tags:["minimal","clean"],         palette:"p6", badge:"new",  emoji:"ð©ð»" },
-  { name:"Priya",     ethnicity:"South Asian",       style:"Vibrant",     tags:["vibrant","fashion"],       palette:"p3", badge:"",     emoji:"ð©ð½" },
-  { name:"Luna",      ethnicity:"Latina",            style:"Casual-Chic", tags:["casual","chic"],           palette:"p5", badge:"hot",  emoji:"ð©ð½" },
-  { name:"Zara",      ethnicity:"Middle Eastern",    style:"Luxury",      tags:["luxury","modest"],         palette:"p1", badge:"top",  emoji:"ð©ð»" },
-  { name:"Maya",      ethnicity:"Black American",    style:"Streetwear",  tags:["streetwear","urban"],      palette:"p2", badge:"",     emoji:"ð©ð¿" },
-  { name:"Isla",      ethnicity:"Northern European", style:"Clean",       tags:["minimal","classic"],       palette:"p4", badge:"new",  emoji:"ð©ð¼" },
-  { name:"Nadia",     ethnicity:"Eastern European",  style:"Edgy",        tags:["edgy","editorial"],        palette:"p6", badge:"",     emoji:"ð©ð»" },
-  { name:"Fatima",    ethnicity:"North African",     style:"Modest",      tags:["modest","elegant"],        palette:"p3", badge:"new",  emoji:"ð©ð½" },
-  { name:"Yuna",      ethnicity:"Korean",            style:"K-Fashion",   tags:["k-fashion","trendy"],      palette:"p5", badge:"hot",  emoji:"ð©ð»" },
-  { name:"Carmen",    ethnicity:"Spanish",           style:"Mediterranean",tags:["mediterranean","bold"],   palette:"p7", badge:"",     emoji:"ð©ð½" },
-  { name:"Asha",      ethnicity:"Ethiopian",         style:"High Fashion", tags:["high-fashion","elite"],   palette:"p1", badge:"top",  emoji:"ð©ð¿" },
-  { name:"Lily",      ethnicity:"Australian",        style:"Casual",      tags:["casual","beach"],          palette:"p4", badge:"",     emoji:"ð©ð¼" },
-  { name:"Nia",       ethnicity:"Caribbean",         style:"Vibrant",     tags:["vibrant","colorful"],      palette:"p2", badge:"new",  emoji:"ð©ð¾" },
-  { name:"Hana",      ethnicity:"Japanese",          style:"Minimal",     tags:["minimal","zen"],           palette:"p6", badge:"",     emoji:"ð©ð»" },
-  { name:"Valentina", ethnicity:"Brazilian",         style:"Bold",        tags:["bold","confident"],        palette:"p5", badge:"hot",  emoji:"ð©ð½" },
-  { name:"Sara",      ethnicity:"Scandinavian",      style:"Clean",       tags:["clean","nordic"],          palette:"p4", badge:"",     emoji:"ð©ð¼" },
-  { name:"Amara",     ethnicity:"Nigerian",          style:"Afropunk",    tags:["afropunk","artistic"],     palette:"p2", badge:"top",  emoji:"ð©ð¿" },
-  { name:"Elena",     ethnicity:"Russian",           style:"Editorial",   tags:["editorial","sleek"],       palette:"p1", badge:"",     emoji:"ð©ð»" },
-];
-
-const badgeClass = { top:"badge-top", hot:"badge-hot", new:"badge-new", "":"" };
-const badgeLabel = { top:"â­ Top Pick", hot:"ð¥ Hot", new:"â¦ New", "":"" };
-
-function renderModels() {
-  const grid = document.getElementById('models-grid');
-  models.forEach((m, i) => {
-    const delay = Math.min(i * 0.04, 0.8);
-    grid.innerHTML += `
-      <div class="model-card animate-fade" style="animation-delay:${delay}s">
-        <div class="model-avatar ${m.palette}">
-          <div class="model-avatar-inner">
-            <div class="model-silhouette">${m.emoji}</div>
-          </div>
-          <div class="model-overlay"></div>
-          ${m.badge ? `<span class="model-badge ${badgeClass[m.badge]}">${badgeLabel[m.badge]}</span>` : ''}
-        </div>
-        <div class="model-info">
-          <div class="model-name">${m.name}</div>
-          <div class="model-ethnicity">${m.ethnicity} Â· ${m.style}</div>
-          <div class="model-tags">${m.tags.map(t => `<span class="model-tag">${t}</span>`).join('')}</div>
-          <button class="model-select-btn" onclick="selectModel('${m.name}')">Select Model</button>
-        </div>
-      </div>`;
-  });
-}
+// Card #65 homepage gallery is now server-rendered via snippets/model_card.liquid
+// (Liquid {% for %} over all_products['ai-model-photo'].media). Removed JS `models = [...]`
+// array and `renderModels()` to kill the hand-typed-data drift class behind #73 and #25.
 
 function selectModel(name) {
   document.getElementById('pricing').scrollIntoView({ behavior:'smooth' });
@@ -734,7 +742,6 @@ document.querySelectorAll('.animate-fade, .animate-up').forEach(el => {
 
 window.selectModel = selectModel;
 window.toggleFaq = toggleFaq;
-renderModels();
 </script>
 
 
