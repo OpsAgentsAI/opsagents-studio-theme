@@ -2284,5 +2284,27 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "SEO & Social Sharing",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Fallback values used when a page or product hasn't set its own meta description / social share image. Admin > Settings > Store details (homepage) and per-product 'Search engine listing' still take precedence."
+      },
+      {
+        "type": "textarea",
+        "id": "default_meta_description",
+        "label": "Default meta description",
+        "info": "Used as the fallback for any page that doesn't have its own description set in admin. Should describe the store in 140\u2013160 characters.",
+        "default": ""
+      },
+      {
+        "type": "image_picker",
+        "id": "default_og_image",
+        "label": "Default social share image",
+        "info": "Recommended 1200\u00d7630px. Used for og:image / twitter:image when the page has no image of its own."
+      }
+    ]
   }
 ]
