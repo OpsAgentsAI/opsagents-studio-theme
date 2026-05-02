@@ -27,7 +27,8 @@
   assign og_url = canonical_url | default: request.origin
   assign og_type = 'website'
   # fix(#34, #72): fall back to a real description (not shop.name) so og:description / twitter:description don't duplicate the title.
-  assign meta_description = page_description | default: shop.description | default: settings.default_meta_description
+  # fix(#34, #72) v2 (2026-05-01): add a hardcoded literal at the end of the chain so the homepage ALWAYS ships a meta description, even when shop.description and settings.default_meta_description are unset in admin.
+  assign meta_description = page_description | default: shop.description | default: settings.default_meta_description | default: 'Upload a product photo, choose an AI model, get studio-grade model photos in 3 business days — from $6/image. 20 diverse AI models. Commercial rights included.'
   assign og_description = meta_description | default: shop.name
 
   # fix(#34, #72): pick a fallback social image so homepage and other pages without page_image still get og:image.
